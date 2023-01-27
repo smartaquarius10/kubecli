@@ -49,10 +49,10 @@ func backupAttribute(namespace string, attribute string, filter []string) {
 				}
 				if query != "" {
 					stdout = cmd.ExecuteCommand("get", "deployments", name, "-n", namespace, "-o", "jsonpath='{"+query+"}'")
-					query = getQuery(query, strings.Trim(string(stdout), "'"))
+					//query = getQuery(query, strings.Trim(string(stdout), "'"))
 					if len(stdout) > 2 {
-						fmt.Println(name + "|" + query)
-						f.WriteString(name + "|" + query + "\n")
+						fmt.Println(name + "|" + getQuery(query, strings.Trim(string(stdout), "'")))
+						f.WriteString(name + "|" + getQuery(query, strings.Trim(string(stdout), "'")) + "\n")
 					} else {
 						fmt.Println("object not found in", name)
 					}
