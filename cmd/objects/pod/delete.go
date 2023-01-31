@@ -24,7 +24,7 @@ func DeleteCmd() *cobra.Command {
 }
 
 func deletepod(namespace string) {
-	podname := objects.SelectObject(namespace, "pods", "pod/")
+	podname := objects.SelectObject(namespace, "pods", "pod/", "name")
 	stdout := cmd.ExecuteCommand("delete", "pods", podname, "-n", namespace)
 	fmt.Println(string(stdout))
 }

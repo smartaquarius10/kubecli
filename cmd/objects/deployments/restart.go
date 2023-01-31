@@ -25,7 +25,7 @@ func RestartCmd() *cobra.Command {
 
 func restartObject(namespace string) {
 
-	deployment := objects.SelectObject(namespace, "deployments", "deployment.apps/")
+	deployment := objects.SelectObject(namespace, "deployments", "deployment.apps/", "name")
 	stdout := cmd.ExecuteCommand("rollout", "restart", "deployment", deployment, "-n", namespace)
 	fmt.Println(string(stdout))
 }

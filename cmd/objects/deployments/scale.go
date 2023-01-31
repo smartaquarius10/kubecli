@@ -30,7 +30,7 @@ func ScaleCmd() *cobra.Command {
 	return scaleCmd
 }
 func scaleobjects(namespace string, filter []string, count string) {
-	stdout := objects.GetKubernetesObject(namespace, "deployments")
+	stdout := objects.GetKubernetesObjects(namespace, "deployments", "name")
 	scanner := bufio.NewScanner(strings.NewReader(string(stdout)))
 
 	for scanner.Scan() {

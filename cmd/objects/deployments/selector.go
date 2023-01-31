@@ -27,7 +27,7 @@ func SelectorCmd() *cobra.Command {
 }
 
 func getSelector(attribute string, namespace string) {
-	query := cmd.GetJsonNodePath(objects.GetObjectJson(objects.SelectObject(namespace, "deployments", "deployment.apps/"), namespace, "deployments"), attribute)
+	query := cmd.GetJsonNodePath(objects.GetObjectJson(objects.SelectObject(namespace, "deployments", "deployment.apps/", "name"), namespace, "deployments"), attribute)
 	fmt.Println(query)
 
 }

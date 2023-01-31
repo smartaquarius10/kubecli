@@ -31,7 +31,7 @@ func ViewCmd() *cobra.Command {
 }
 
 func viewObject(namespace string, attribute string, filter []string) {
-	stdout := objects.GetKubernetesObject(namespace, "deployments")
+	stdout := objects.GetKubernetesObjects(namespace, "deployments", "name")
 	scanner := bufio.NewScanner(strings.NewReader(string(stdout)))
 	var query string = ""
 	for scanner.Scan() {

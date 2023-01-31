@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"bufio"
 	"encoding/json"
 	"fmt"
 	"os/exec"
@@ -17,22 +16,6 @@ func ExecuteCommand(arg ...string) []byte {
 		return nil
 	}
 	return stdout
-}
-
-func ExecuteSessionCommand(arg ...string) {
-	cmd := exec.Command(kubecli, arg...)
-	stdout, _ := cmd.StdoutPipe()
-	cmd.Start()
-	fmt.Println(cmd.Args)
-	scanner := bufio.NewScanner(stdout)
-	scanner.Split(bufio.ScanWords)
-	for scanner.Scan() {
-		m := scanner.Text()
-		fmt.Println(m)
-	}
-	fmt.Println("2")
-	cmd.Wait()
-	fmt.Println("3")
 }
 
 func findnestedpath(path string, key string, v interface{}) (string, bool) {

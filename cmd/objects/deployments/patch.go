@@ -14,8 +14,8 @@ import (
 
 var backupCmd = &cobra.Command{
 	Use:   "backup",
-	Short: "Backup objects specified in yaml",
-	Long:  "Pass namespace & attribute. For eg. qa1 and nodetype",
+	Short: "Backup attribute value of the objects in a file",
+	Long:  "If filter is passed then filtered objects shall be selected else all objects",
 	Run: func(cmd *cobra.Command, args []string) {
 		namespace, _ := cmd.Flags().GetString("namespace")
 		attribute, _ := cmd.Flags().GetString("attrib")
@@ -34,7 +34,7 @@ func BackupCmd() *cobra.Command {
 }
 
 func backupAttribute(namespace string, attribute string, filter []string) {
-	stdout := objects.GetKubernetesObject(namespace, "deployments")
+	stdout := objects.GetKubernetesObjects(namespace, "deployments", "name")
 	scanner := bufio.NewScanner(strings.NewReader(string(stdout)))
 	f, _ := os.Create(namespace)
 	var query string = ""
@@ -48,8 +48,7 @@ func backupAttribute(namespace string, attribute string, filter []string) {
 					query = cmd.GetJsonNodePath(stdoutj, attribute)
 				}
 				if query != "" {
-					stdout = cmd.ExecuteCommand("get", "deployments", name, "-n", namespace, "-o", "jsonpath='{"+query+"}'")
-					//query = getQuery(query, strings.Trim(string(stdout), "'"))
+					stdout = objects.GetKubernetesObject(namespace, "deployments", name, "jsonpath='{"+query+"}'")
 					if len(stdout) > 2 {
 						fmt.Println(name + "|" + getQuery(query, strings.Trim(string(stdout), "'")))
 						f.WriteString(name + "|" + getQuery(query, strings.Trim(string(stdout), "'")) + "\n")
@@ -66,7 +65,7 @@ func backupAttribute(namespace string, attribute string, filter []string) {
 
 var removeCmd = &cobra.Command{
 	Use:   "remove",
-	Short: "Remove objects specified in yaml",
+	Short: "Remove labels specified in yaml",
 	Run: func(cmd *cobra.Command, args []string) {
 		namespace, _ := cmd.Flags().GetString("namespace")
 		attrib, _ := cmd.Flags().GetString("attrib")
@@ -76,7 +75,7 @@ var removeCmd = &cobra.Command{
 }
 
 func RemoveCmd() *cobra.Command {
-	removeCmd.Flags().StringP("namespace", "n", "", "Pass namespace having deployments")
+	removeCmd.Flags().StringP("namespace", "n", "", "Pass namespace")
 	removeCmd.Flags().StringP("attrib", "a", "", "Pass attribute name")
 	removeCmd.Flags().StringArrayP("filter", "f", []string{"*"}, "Pass search characters of deployment")
 	removeCmd.MarkFlagRequired("namespace")
@@ -87,7 +86,7 @@ func removeAttribute(namespace string, attribute string, filter []string) {
 	if !checkfileexist(namespace) {
 		backupAttribute(namespace, attribute, filter)
 	}
-	stdout := objects.GetKubernetesObject(namespace, "deployments")
+	stdout := objects.GetKubernetesObjects(namespace, "deployments", "name")
 	scanner := bufio.NewScanner(strings.NewReader(string(stdout)))
 	query := ""
 	jsonquery := ""
@@ -144,7 +143,7 @@ func applyAttribute(namespace string, query string, file string, value string) {
 			fmt.Println(string(stdout))
 		}
 	} else {
-		deployment := objects.SelectObject(namespace, "deployments", "deployment.apps/")
+		deployment := objects.SelectObject(namespace, "deployments", "deployment.apps/", "name")
 		jsonquery := getQuery(query, `"`+value+`"`)
 		stdout := cmd.ExecuteCommand("patch", "deployments", deployment, "-n", namespace, "-p", jsonquery)
 		fmt.Println(string(stdout))

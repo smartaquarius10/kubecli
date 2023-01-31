@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/smartaquarius10/kubecli/cmd/contextauth"
+
 	"github.com/smartaquarius10/kubecli/cmd/objects/deployments"
 	"github.com/smartaquarius10/kubecli/cmd/objects/pod"
 	"github.com/spf13/cobra"
@@ -37,5 +38,5 @@ func init() {
 	rootCmd.AddCommand(deployments.SelectorCmd())
 	rootCmd.AddCommand(pod.DeleteCmd())
 	rootCmd.AddCommand(deployments.RestartCmd())
-	//rootCmd.AddCommand(pod.LoginCmd())
+	rootCmd.AddCommand(pod.LogsCmd())
 }
