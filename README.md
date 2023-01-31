@@ -2,9 +2,9 @@
 
 This project I have just started as a draft to manage daily activities with kubernetes. Its a very initial draft and might be having errors. Need to create unit test cases as well.
 
-It depends on kubectl binary 
+### It depends on kubectl binary
 
-Subcommands covered
+Subcommands 
 
 **swap** :- Generally we add multiple context as connected with different kubernetes clusters. This subcommand can help in changing the context
 
@@ -35,4 +35,10 @@ Subcommands covered
 Select Pod: 1
 
 
+## How to use
+copy this binary in **/usr/bin** by the name `kubectl-kubecli`
+Then use it as
 
+`kubectl kubecli [subcommands]`
+
+we can also change the name of binary as per interest
