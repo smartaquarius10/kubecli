@@ -6,7 +6,7 @@ This project I have just started as a draft to manage daily activities with kube
 
 Subcommands 
 
-**swap** :- Generally we add multiple context as connected with different kubernetes clusters. This subcommand can help in changing the context
+**swap** :- Change the kubectl auth context while connecting with multiple clusters
 
 **authdelete** :- To delete the context run this sub command
 
