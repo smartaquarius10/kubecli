@@ -60,3 +60,7 @@ func selectApp(stdout []byte, extrachars string, isPod bool) string {
 func RemoveExtraChars(text string, extrachars string) string {
 	return strings.ReplaceAll(text, extrachars, "")
 }
+
+func GetPodMemory(namespace string, objectType string) []byte {
+	return cmd.ExecuteCommand("top", objectType, "-n", namespace)
+}

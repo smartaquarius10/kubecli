@@ -39,4 +39,5 @@ func init() {
 	rootCmd.AddCommand(pod.DeleteCmd())
 	rootCmd.AddCommand(deployments.RestartCmd())
 	rootCmd.AddCommand(pod.LogsCmd())
+	rootCmd.AddCommand(pod.TopCmd())
 }

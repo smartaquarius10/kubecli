@@ -20,21 +20,24 @@ var backupCmd = &cobra.Command{
 		namespace, _ := cmd.Flags().GetString("namespace")
 		attribute, _ := cmd.Flags().GetString("attrib")
 		filter, _ := cmd.Flags().GetStringArray("filter")
-		backupAttribute(namespace, attribute, filter)
+		object, _ := cmd.Flags().GetString("object")
+		backupAttribute(namespace, attribute, object, filter)
 	},
 }
 
 func BackupCmd() *cobra.Command {
 	backupCmd.Flags().StringP("namespace", "n", "", "Pass namespace having deployments")
 	backupCmd.Flags().StringP("attrib", "a", "", "Pass attribute name")
+	backupCmd.Flags().StringP("object", "o", "", "Pass object name")
 	backupCmd.Flags().StringArrayP("filter", "f", []string{"*"}, "Pass search characters or full name of deployment")
 	backupCmd.MarkFlagRequired("namespace")
 	backupCmd.MarkFlagRequired("attrib")
+	backupCmd.MarkFlagRequired("object")
 	return backupCmd
 }
 
-func backupAttribute(namespace string, attribute string, filter []string) {
-	stdout := objects.GetKubernetesObjects(namespace, "deployments", "name")
+func backupAttribute(namespace string, attribute string, object string, filter []string) {
+	stdout := objects.GetKubernetesObjects(namespace, object, "name")
 	scanner := bufio.NewScanner(strings.NewReader(string(stdout)))
 	f, _ := os.Create(namespace)
 	var query string = ""
@@ -44,11 +47,11 @@ func backupAttribute(namespace string, attribute string, filter []string) {
 			if fi == "*" || strings.Contains(scanner.Text(), fi) {
 				name := objects.RemoveExtraChars(scanner.Text(), "deployment.apps/")
 				if query == "" {
-					stdoutj := objects.GetObjectJson(name, namespace, "deployments")
+					stdoutj := objects.GetObjectJson(name, namespace, object)
 					query = cmd.GetJsonNodePath(stdoutj, attribute)
 				}
 				if query != "" {
-					stdout = objects.GetKubernetesObject(namespace, "deployments", name, "jsonpath='{"+query+"}'")
+					stdout = objects.GetKubernetesObject(namespace, object, name, "jsonpath='{"+query+"}'")
 					if len(stdout) > 2 {
 						fmt.Println(name + "|" + getQuery(query, strings.Trim(string(stdout), "'")))
 						f.WriteString(name + "|" + getQuery(query, strings.Trim(string(stdout), "'")) + "\n")
@@ -70,21 +73,24 @@ var removeCmd = &cobra.Command{
 		namespace, _ := cmd.Flags().GetString("namespace")
 		attrib, _ := cmd.Flags().GetString("attrib")
 		filter, _ := cmd.Flags().GetStringArray("filter")
-		removeAttribute(namespace, attrib, filter)
+		object, _ := cmd.Flags().GetString("object")
+		removeAttribute(namespace, attrib, object, filter)
 	},
 }
 
 func RemoveCmd() *cobra.Command {
 	removeCmd.Flags().StringP("namespace", "n", "", "Pass namespace")
 	removeCmd.Flags().StringP("attrib", "a", "", "Pass attribute name")
+	removeCmd.Flags().StringP("object", "o", "", "Pass object name")
 	removeCmd.Flags().StringArrayP("filter", "f", []string{"*"}, "Pass search characters of deployment")
 	removeCmd.MarkFlagRequired("namespace")
 	removeCmd.MarkFlagRequired("attrib")
+	removeCmd.MarkFlagRequired("object")
 	return removeCmd
 }
-func removeAttribute(namespace string, attribute string, filter []string) {
+func removeAttribute(namespace string, attribute string, object string, filter []string) {
 	if !checkfileexist(namespace) {
-		backupAttribute(namespace, attribute, filter)
+		backupAttribute(namespace, attribute, object, filter)
 	}
 	stdout := objects.GetKubernetesObjects(namespace, "deployments", "name")
 	scanner := bufio.NewScanner(strings.NewReader(string(stdout)))
