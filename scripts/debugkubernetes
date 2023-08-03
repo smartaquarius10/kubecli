@@ -1,0 +1,19 @@
+#!/bin/bash
+# run this script to debug azure kubernetes nodes. After completion just exit using exit command and it will auto delete the pod
+echo
+echo "Login into nodes"
+echo
+echo
+names=$(kubectl get nodes -o name)
+debugpod=""
+select name in $names; do
+     contextexist=$(echo ${names[@]} | grep -o $name | wc -w)
+     if [[ $contextexist != 0 ]]; then
+#      echo "You have chosen $name"
+      kubectl debug $name -it --image=mcr.microsoft.com/dotnet/runtime-deps:6.0
+      debugpod=$(echo $name|sed "s/node\///")
+      break
+     fi
+done
+debugpod=$(kubectl get pods|awk '{print $1}'|grep node-debugger-$debugpod)
+kubectl delete pod $debugpod
