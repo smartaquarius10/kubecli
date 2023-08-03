@@ -8,6 +8,7 @@ import (
 
 	"github.com/smartaquarius10/kubecli/cmd/objects/deployments"
 	"github.com/smartaquarius10/kubecli/cmd/objects/pod"
+	"github.com/smartaquarius10/kubecli/cmd/objects/resources"
 	"github.com/spf13/cobra"
 )
 
@@ -40,4 +41,5 @@ func init() {
 	rootCmd.AddCommand(deployments.RestartCmd())
 	rootCmd.AddCommand(pod.LogsCmd())
 	rootCmd.AddCommand(pod.TopCmd())
+	rootCmd.AddCommand(resources.TsCmd())
 }

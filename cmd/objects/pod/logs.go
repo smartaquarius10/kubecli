@@ -18,7 +18,7 @@ var logsCmd = &cobra.Command{
 }
 
 func LogsCmd() *cobra.Command {
-	logsCmd.Flags().StringP("namespace", "n", "", "Pass namespace having deployments")
+	logsCmd.Flags().StringP("namespace", "n", "default", "Pass namespace having deployments")
 	return logsCmd
 }
 func getLogsPodPerContainer(namespace string) {
