@@ -85,5 +85,5 @@ func GetRunningPodsInNode(node_name string) []byte {
 }
 
 func GetObjectLastUpdatedTimeStamp(objectType string, objectName string, namespace string) string {
-	return string(cmd.ExecuteCommand("get", objectType, objectName, "--namespace", namespace, `--show-managed-fields -o jsonpath='{range .metadata.managedFields[*]}{.manager}{" did "}{.operation}{" at "}{.time}{"\n"}{end}'`))
+	return string(cmd.ExecuteCommand("get", objectType, objectName, "--namespace", namespace, "--show-managed-fields", "-o", `jsonpath={range .metadata.managedFields[*]}{.manager}{" did "}{.operation}{" at "}{.time}{"\n"}{end}`))
 }
