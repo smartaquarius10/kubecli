@@ -9,7 +9,8 @@ import (
 
 var DeleteCmd = &cobra.Command{
 	Use:   "authdelete",
-	Short: "Delete the auth context",
+	Short: "Delete the kubernetes auth context",
+	Long:  "It keeps kube config file clean",
 	Run: func(cmd *cobra.Command, args []string) {
 		deleteContext()
 	},

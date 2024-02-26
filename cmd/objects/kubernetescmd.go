@@ -26,15 +26,15 @@ func GetObjectJson(name string, namespace string, object string) []byte {
 
 func SelectObject(namespace string, object string, extrachars string, selector string) string {
 	stdout := GetKubernetesObjects(namespace, object, selector)
-	return selectApp(stdout, extrachars, true, false)
+	return selectApp(stdout, extrachars)
 }
 
 func SelectContainer(namespace string, podName string, selector string, extrachars string) string {
 	stdout := GetKubernetesObject(namespace, "pods", podName, selector)
-	return selectApp(stdout, extrachars, false, false)
+	return selectApp(stdout, extrachars)
 }
 
-func selectApp(stdout []byte, extrachars string, isPod bool, isNode bool) string {
+func selectApp(stdout []byte, extrachars string) string {
 	scanner := bufio.NewScanner(strings.NewReader(string(stdout)))
 	counter := 1
 	cmdmap := make(map[int]string)
@@ -46,21 +46,14 @@ func selectApp(stdout []byte, extrachars string, isPod bool, isNode bool) string
 			counter++
 		}
 	}
-	if counter > 2 {
-		var deployment_count int
-		if isPod {
-			fmt.Print("Select Pod:")
-		} else if !isNode {
-			fmt.Print("Select Container:")
-		} else {
-			fmt.Print("Select Node:")
-		}
-		fmt.Scanf("%d", &deployment_count)
+	var deployment_count int
+	fmt.Print("Select: ")
+	fmt.Scanf("%d", &deployment_count)
+	if deployment_count > 0 && deployment_count < counter {
 		return cmdmap[deployment_count]
-	} else if counter > 1 {
-		return cmdmap[counter]
+	} else {
+		return ""
 	}
-	return ""
 }
 
 func RemoveExtraChars(text string, extrachars string) string {
@@ -78,7 +71,7 @@ func GetPodMemory(namespace string, podname string) string {
 }
 func SelectNodes() string {
 	stdout := GetKubernetesNodes("nodes", "name")
-	return selectApp(stdout, "node/", false, true)
+	return selectApp(stdout, "node/")
 }
 func GetRunningPodsInNode(node_name string) []byte {
 	return cmd.ExecuteCommand("get", "pods", "-A", "--no-headers", "--field-selector=status.phase==Running,spec.nodeName=="+node_name)

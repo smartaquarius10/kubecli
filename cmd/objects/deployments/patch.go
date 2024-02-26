@@ -118,39 +118,39 @@ func removeAttribute(namespace string, attribute string, object string, filter [
 }
 
 var applyCmd = &cobra.Command{
-	Use:   "apply",
-	Short: "Apply objects specified in yaml",
+	Use:   "update",
+	Short: "This command updates the singular attributes of object definition",
+	Long:  "For eg. update label or annotation etc. However, it won't work when in the section with multiple containers",
 	Run: func(cmd *cobra.Command, args []string) {
 		namespace, _ := cmd.Flags().GetString("namespace")
 		query, _ := cmd.Flags().GetString("query")
-		file, _ := cmd.Flags().GetString("file")
+		all, _ := cmd.Flags().GetString("all")
 		value, _ := cmd.Flags().GetString("value")
-		applyAttribute(namespace, query, file, value)
+		applyAttribute(namespace, query, all, value)
 	},
 }
 
 func ApplyCmd() *cobra.Command {
 	applyCmd.Flags().StringP("namespace", "n", "", "Pass namespace having deployments")
-	applyCmd.Flags().StringP("query", "q", "", "Pass query path of the object. If file is not passed")
-	applyCmd.Flags().StringP("file", "f", "", "Pass file name if selectors are in backup file")
-	applyCmd.Flags().StringP("value", "v", "", "Pass node value for specific deployment. If file is not passed")
+	applyCmd.Flags().StringP("query", "q", "", "Pass json query path split with dot(.) of the attibute. For eg. spec.replicas ")
+	applyCmd.Flags().StringP("all", "a", "", "Patch attribute in all deployments")
+	applyCmd.Flags().StringP("value", "v", "", "Pass value of the attribute specific deployment. For eg. 2")
+	applyCmd.MarkFlagRequired("query")
 	applyCmd.MarkFlagRequired("namespace")
+	applyCmd.MarkFlagRequired("value")
 	return applyCmd
 }
-func applyAttribute(namespace string, query string, file string, value string) {
-	if file != "" {
-		readFile, _ := os.Open(file)
-		defer readFile.Close()
-		scanner := bufio.NewScanner(readFile)
-		scanner.Split(bufio.ScanLines)
+func applyAttribute(namespace string, query string, all string, value string) {
+	jsonquery := getQuery(query, `"`+value+`"`)
+	if all != "" {
+		stdout := objects.GetKubernetesObjects(namespace, "deployments", "name")
+		scanner := bufio.NewScanner(strings.NewReader(string(stdout)))
 		for scanner.Scan() {
-			parts := strings.Split(scanner.Text(), "|")
-			stdout := cmd.ExecuteCommand("patch", "deployments", parts[0], "-n", namespace, "-p", parts[1])
+			stdout := cmd.ExecuteCommand("patch", "deployments", scanner.Text(), "-n", namespace, "-p", jsonquery)
 			fmt.Println(string(stdout))
 		}
 	} else {
 		deployment := objects.SelectObject(namespace, "deployments", "deployment.apps/", "name")
-		jsonquery := getQuery(query, `"`+value+`"`)
 		stdout := cmd.ExecuteCommand("patch", "deployments", deployment, "-n", namespace, "-p", jsonquery)
 		fmt.Println(string(stdout))
 	}

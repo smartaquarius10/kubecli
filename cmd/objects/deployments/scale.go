@@ -36,7 +36,7 @@ func scaleobjects(namespace string, filter []string, count string) {
 	for scanner.Scan() {
 		for _, f := range filter {
 			if f == "*" || strings.Contains(scanner.Text(), f) {
-				name := strings.ReplaceAll(scanner.Text(), ".apps", "")
+				name := objects.RemoveExtraChars(scanner.Text(), ".apps")
 				stdout = cmd.ExecuteCommand("scale", "--replicas="+count, name, "-n", namespace)
 				fmt.Println(string(stdout))
 			}
